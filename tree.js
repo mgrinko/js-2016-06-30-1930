@@ -14,9 +14,14 @@ class Tree {
 
     var ul = document.createElement('ul');
 
-    for (var key in obj) {
-      var li = document.createElement('li');
-      li.innerHTML = key;
+    for (let key in obj) {
+      let li = document.createElement('li');
+      let span = document.createElement('span');
+
+      span.textContent = key;
+      span.onclick = this._onItemClick;
+
+      li.appendChild(span);
 
       var childrenUl = this._createTreeDom(obj[key]);
 
@@ -29,6 +34,10 @@ class Tree {
 
     return ul;
   }
+
+  _onItemClick(e) {
+    event.target.closest('li').classList.toggle('closed');
+  };
 
   _isObjectEmpty(obj) {
     for (var key in obj) {
