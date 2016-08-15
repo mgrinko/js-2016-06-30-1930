@@ -19,7 +19,7 @@ class Tree {
       let span = document.createElement('span');
 
       span.textContent = key;
-      span.onclick = this._onItemClick;
+      span.addEventListener('click', this._onItemClick.bind(this));
 
       li.appendChild(span);
 
