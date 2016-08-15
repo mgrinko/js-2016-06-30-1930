@@ -156,8 +156,6 @@ let defaultPhones = [
   }
 ];
 
-
-
 class Page {
   constructor(options) {
     this._el = options.element;
@@ -178,5 +176,17 @@ class Page {
     this._sorter = new Sorter({
       element: this._el.querySelector('[data-component="sorter"]')
     });
+
+    this._catalogue.getElement().addEventListener('phoneSelected', event => {
+      alert(event.detail);
+
+      let phoneDetails = this._getPhoneById(event.detail);
+
+      //this._viewer.render(phoneDetails);
+    });
+  }
+
+  _getPhoneById() {
+
   }
 }
