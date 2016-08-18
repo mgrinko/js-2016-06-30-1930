@@ -4,31 +4,33 @@ let template = document.getElementById('phone-catalogue-template').innerHTML;
 
 class PhoneCatalogue {
   constructor(options) {
-    console.log(template);
+    this._el = options.element;
 
     this._compiledTemplate = _.template(template);
 
-    console.log(this._compiledTemplate);
-
-    this._el = options.element;
-
     this._render(options.phones);
 
-    this._el.addEventListener('click', event => {
-      if (!event.target.closest('[data-element="phoneLink"]')) {
-        return;
-      }
+    this._el.addEventListener('click', this._onPhoneLinkClick.bind(this));
+  }
 
-      //event.preventDefault();
+  _onPhoneLinkClick(event) {
+    if (!event.target.closest('[data-element="phoneLink"]')) {
+      return;
+    }
 
-      let phoneContainer = event.target.closest('[data-element="phone"]');
+    //event.preventDefault();
 
-      let customEvent = new CustomEvent('phoneSelected', {
-        detail: phoneContainer.dataset.phoneId
-      });
+    let phoneContainer = event.target.closest('[data-element="phone"]');
 
-      this._el.dispatchEvent(customEvent);
+    this._triggerPhoneSelectedEvent(phoneContainer.dataset.phoneId);
+  }
+
+  _triggerPhoneSelectedEvent(phoneId) {
+    let customEvent = new CustomEvent('phoneSelected', {
+      detail: phoneId
     });
+
+    this._el.dispatchEvent(customEvent);
   }
 
   getElement() {
