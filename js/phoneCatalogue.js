@@ -49,3 +49,5 @@ class PhoneCatalogue {
     this._el.dispatchEvent(customEvent);
   }
 }
+
+module.exports = PhoneCatalogue;

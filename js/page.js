@@ -1,5 +1,10 @@
 'use strict';
 
+let PhoneCatalogue = require('./phoneCatalogue');
+let PhoneViewer = require('./phoneViewer');
+let Filter = require('./filter');
+let Sorter = require('./sorter');
+
 let defaultPhones = [
   {
     "age": 0,
@@ -198,3 +203,5 @@ class Page {
     })[0];
   }
 }
+
+module.exports = Page;

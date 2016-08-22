@@ -37,3 +37,5 @@ class PhoneViewer {
   //   this._el.dispatchEvent(new CustomEvent('back'));
   // }
 }
+
+module.exports = PhoneViewer;
