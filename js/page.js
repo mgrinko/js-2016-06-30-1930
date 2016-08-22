@@ -169,6 +169,8 @@ class Page {
       element: this._el.querySelector('[data-component="phoneViewer"]')
     });
 
+    this._viewer.hide();
+
     this._filter = new Filter({
       element: this._el.querySelector('[data-component="filter"]')
     });
@@ -177,16 +179,22 @@ class Page {
       element: this._el.querySelector('[data-component="sorter"]')
     });
 
-    this._catalogue.getElement().addEventListener('phoneSelected', event => {
-      alert(event.detail);
-
-      let phoneDetails = this._getPhoneById(event.detail);
-
-      //this._viewer.render(phoneDetails);
-    });
+    this._catalogue.getElement().addEventListener('phoneSelected', this._onPhoneSelected.bind(this));
   }
 
-  _getPhoneById() {
+  _onPhoneSelected(event) {
+    let phoneId = event.detail;
+    let phoneDetails = this._getPhoneById(phoneId);
 
+    this._catalogue.hide();
+
+    this._viewer.render(phoneDetails);
+    this._viewer.show();
+  }
+
+  _getPhoneById(phoneId) {
+    return defaultPhones.filter(function(phone) {
+      return phone.id === phoneId;
+    })[0];
   }
 }

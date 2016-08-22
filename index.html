@@ -9,7 +9,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.15.0/lodash.min.js" defer></script>
 
   <script src="js/phoneCatalogue.js" defer></script>
-  <script src="js/phoneViever.js" defer></script>
+  <script src="js/phoneViewer.js" defer></script>
   <script src="js/filter.js" defer></script>
   <script src="js/sorter.js" defer></script>
   <script src="js/page.js" defer></script>
@@ -50,7 +50,7 @@
   </div>
 </div>
 
-<script type="asdasd" id="phone-catalogue-template">
+<script type="template" id="phone-catalogue-template">
   <ul class="phones">
     <% phones.forEach(function(phone) { %>
 
@@ -65,6 +65,21 @@
     <% }); %>
 
   </ul>
+</script>
+
+<script type="template" id="phone-viewer-template">
+
+  <button data-element="backButton">Back</button>
+
+  <img class="phone" src="<%=phone.imageUrl%>">
+  <h1><%-phone.name%></h1>
+  <p><%-phone.snippet%></p>
+  <ul class="phone-thumbs">
+    <li>
+      <img src="<%=phone.imageUrl%>">
+    </li>
+  </ul>
+
 </script>
 
 
