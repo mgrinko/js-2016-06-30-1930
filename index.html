@@ -45,38 +45,5 @@
   </div>
 </div>
 
-<script type="template" id="phone-catalogue-template">
-  <ul class="phones">
-    <% phones.forEach(function(phone) { %>
-
-      <li class="thumbnail" data-element="phone" data-phone-id="<%=phone.id%>">
-        <a href="#!/phones/<%=phone.id%>" class="thumb" data-element="phoneLink" >
-          <img alt="<%=phone.name%>" src="<%=phone.imageUrl%>">
-        </a>
-        <a href="#!/phones/<%=phone.id%>" data-element="phoneLink"><%=phone.name%></a>
-        <p><%=phone.snippet%></p>
-      </li>
-
-    <% }); %>
-
-  </ul>
-</script>
-
-<script type="template" id="phone-viewer-template">
-
-  <button data-element="backButton">Back</button>
-
-  <img class="phone" src="<%=phone.imageUrl%>">
-  <h1><%-phone.name%></h1>
-  <p><%-phone.snippet%></p>
-  <ul class="phone-thumbs">
-    <li>
-      <img src="<%=phone.imageUrl%>">
-    </li>
-  </ul>
-
-</script>
-
-
 </body>
 </html>
