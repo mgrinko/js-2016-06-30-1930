@@ -1,41 +1,41 @@
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
-
+/******/
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
-
+/******/
 /******/ 		// Check if module is in cache
 /******/ 		if(installedModules[moduleId])
 /******/ 			return installedModules[moduleId].exports;
-
+/******/
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			exports: {},
 /******/ 			id: moduleId,
 /******/ 			loaded: false
 /******/ 		};
-
+/******/
 /******/ 		// Execute the module function
 /******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-
+/******/
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
-
+/******/
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-
-
+/******/
+/******/
 /******/ 	// expose the modules object (__webpack_modules__)
 /******/ 	__webpack_require__.m = modules;
-
+/******/
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
-
+/******/
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
-
+/******/
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(0);
 /******/ })
@@ -45,13 +45,13 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
+	
 	let Page = __webpack_require__(1);
-
+	
 	let page = new Page({
 	  element: document.getElementById('page')
 	});
-
+	
 
 
 /***/ },
@@ -59,12 +59,12 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
+	
 	let PhoneCatalogue = __webpack_require__(2);
 	let PhoneViewer = __webpack_require__(3);
 	let Filter = __webpack_require__(4);
 	let Sorter = __webpack_require__(5);
-
+	
 	let defaultPhones = [
 	  {
 	    "age": 0,
@@ -220,50 +220,50 @@
 	    "snippet": "Motorola CHARM fits easily in your pocket or palm.  Includes MOTOBLUR service."
 	  }
 	];
-
+	
 	class Page {
 	  constructor(options) {
 	    this._el = options.element;
-
+	
 	    this._catalogue = new PhoneCatalogue({
 	      element: this._el.querySelector('[data-component="phoneCatalogue"]'),
 	      phones: defaultPhones
 	    });
-
+	
 	    this._viewer = new PhoneViewer({
 	      element: this._el.querySelector('[data-component="phoneViewer"]')
 	    });
-
+	
 	    this._viewer.hide();
-
+	
 	    this._filter = new Filter({
 	      element: this._el.querySelector('[data-component="filter"]')
 	    });
-
+	
 	    this._sorter = new Sorter({
 	      element: this._el.querySelector('[data-component="sorter"]')
 	    });
-
+	
 	    this._catalogue.getElement().addEventListener('phoneSelected', this._onPhoneSelected.bind(this));
 	  }
-
+	
 	  _onPhoneSelected(event) {
 	    let phoneId = event.detail;
 	    let phoneDetails = this._getPhoneById(phoneId);
-
+	
 	    this._catalogue.hide();
-
+	
 	    this._viewer.render(phoneDetails);
 	    this._viewer.show();
 	  }
-
+	
 	  _getPhoneById(phoneId) {
 	    return defaultPhones.filter(function(phone) {
 	      return phone.id === phoneId;
 	    })[0];
 	  }
 	}
-
+	
 	module.exports = Page;
 
 /***/ },
@@ -271,57 +271,57 @@
 /***/ function(module, exports) {
 
 	'use strict';
-
+	
 	class PhoneCatalogue {
 	  constructor(options) {
 	    let template = document.getElementById('phone-catalogue-template').innerHTML;
-
+	
 	    this._el = options.element;
-
+	
 	    this._compiledTemplate = _.template(template);
-
+	
 	    this._render(options.phones);
-
+	
 	    this._el.addEventListener('click', this._onPhoneLinkClick.bind(this));
 	  }
-
+	
 	  getElement() {
 	    return this._el;
 	  }
-
+	
 	  show() {
 	    this._el.classList.remove('js-hidden')
 	  }
-
+	
 	  hide() {
 	    this._el.classList.add('js-hidden')
 	  }
-
+	
 	  _onPhoneLinkClick(event) {
 	    if (!event.target.closest('[data-element="phoneLink"]')) {
 	      return;
 	    }
-
+	
 	    let phoneContainer = event.target.closest('[data-element="phone"]');
-
+	
 	    this._triggerPhoneSelectedEvent(phoneContainer.dataset.phoneId);
 	  }
-
+	
 	  _render(phones) {
 	    this._el.innerHTML = this._compiledTemplate({
 	      phones: phones
 	    });
 	  }
-
+	
 	  _triggerPhoneSelectedEvent(phoneId) {
 	    let customEvent = new CustomEvent('phoneSelected', {
 	      detail: phoneId
 	    });
-
+	
 	    this._el.dispatchEvent(customEvent);
 	  }
 	}
-
+	
 	module.exports = PhoneCatalogue;
 
 /***/ },
@@ -329,30 +329,30 @@
 /***/ function(module, exports) {
 
 	'use strict';
-
+	
 	class PhoneViewer {
 	  constructor(options) {
 	    let template = document.getElementById('phone-viewer-template').innerHTML;
 	    this._compiledTemplate = _.template(template);
-
+	
 	    this._el = options.element;
-
+	
 	  }
-
+	
 	  show() {
 	    this._el.classList.remove('js-hidden');
 	  }
-
+	
 	  hide() {
 	    this._el.classList.add('js-hidden');
 	  }
-
+	
 	  render(phone) {
 	    this._el.innerHTML = this._compiledTemplate({
 	      phone: phone
 	    });
 	  }
-
+	
 	  // this._el.addEventListener('click', this._onBackButtonClick.bind(this));
 	  //
 	  // _onBackButtonClick(event) {
@@ -367,7 +367,7 @@
 	  //   this._el.dispatchEvent(new CustomEvent('back'));
 	  // }
 	}
-
+	
 	module.exports = PhoneViewer;
 
 /***/ },
@@ -375,15 +375,15 @@
 /***/ function(module, exports) {
 
 	'use strict';
-
+	
 	class Filter {
 	  constructor(options) {
 	    this._el = options.element;
-
-
+	
+	
 	  }
 	}
-
+	
 	module.exports = Filter;
 
 /***/ },
@@ -391,16 +391,17 @@
 /***/ function(module, exports) {
 
 	'use strict';
-
+	
 	class Sorter {
 	  constructor(options) {
 	    this._el = options.element;
-
-
+	
+	
 	  }
 	}
-
+	
 	module.exports = Sorter;
 
 /***/ }
 /******/ ]);
+//# sourceMappingURL=build.js.map
