@@ -94,6 +94,7 @@
 	    });
 	
 	    this._catalogue.getElement().addEventListener('phoneSelected', this._onPhoneSelected.bind(this));
+	    this._filter.getElement().addEventListener('filterChanged', this._onFilterChanged.bind(this));
 	  }
 	
 	  _createClass(Page, [{
@@ -108,11 +109,23 @@
 	      this._viewer.show();
 	    }
 	  }, {
-	    key: '_loadPhones',
-	    value: function _loadPhones() {
-	      var xhr = new XMLHttpRequest();
+	    key: '_onFilterChanged',
+	    value: function _onFilterChanged(event) {
+	      var query = event.detail;
 	
-	      xhr.open('GET', '/data/phones.json', true);
+	      this._loadPhones(query);
+	    }
+	  }, {
+	    key: '_loadPhones',
+	    value: function _loadPhones(query) {
+	      var xhr = new XMLHttpRequest();
+	      var url = '/data/phones.json';
+	
+	      if (query) {
+	        url += '?query=' + query;
+	      }
+	
+	      xhr.open('GET', url, true);
 	
 	      xhr.send();
 	
@@ -121,6 +134,17 @@
 	          alert(xhr.status + ': ' + xhr.statusText); // пример вывода: 404: Not Found
 	        } else {
 	          var phones = JSON.parse(xhr.responseText);
+	
+	          // ToDo: move this code to the server
+	          if (query) {
+	            (function () {
+	              var pattern = query.toLowerCase();
+	
+	              phones = phones.filter(function (phone) {
+	                return !query || phone.name.toLowerCase().indexOf(pattern) !== -1;
+	              });
+	            })();
+	          }
 	
 	          this._catalogue.render(phones);
 	        }
@@ -1477,13 +1501,39 @@
 
 	'use strict';
 	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var Filter = function Filter(options) {
-	  _classCallCheck(this, Filter);
+	var Filter = function () {
+	  function Filter(options) {
+	    _classCallCheck(this, Filter);
 	
-	  this._el = options.element;
-	};
+	    this._el = options.element;
+	
+	    this._field = this._el.querySelector('[data-element="field"]');
+	
+	    this._field.addEventListener('input', this._onFieldChange.bind(this));
+	  }
+	
+	  _createClass(Filter, [{
+	    key: 'getElement',
+	    value: function getElement() {
+	      return this._el;
+	    }
+	  }, {
+	    key: '_onFieldChange',
+	    value: function _onFieldChange() {
+	      var customEvent = new CustomEvent('filterChanged', {
+	        detail: this._field.value
+	      });
+	
+	      this._el.dispatchEvent(customEvent);
+	    }
+	  }]);
+	
+	  return Filter;
+	}();
 	
 	module.exports = Filter;
 

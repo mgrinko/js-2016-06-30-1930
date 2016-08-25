@@ -30,6 +30,7 @@ class Page {
     });
 
     this._catalogue.getElement().addEventListener('phoneSelected', this._onPhoneSelected.bind(this));
+    this._filter.getElement().addEventListener('filterChanged', this._onFilterChanged.bind(this));
   }
 
   _onPhoneSelected(event) {
@@ -42,10 +43,21 @@ class Page {
     this._viewer.show();
   }
 
-  _loadPhones() {
-    var xhr = new XMLHttpRequest();
+  _onFilterChanged(event) {
+    let query = event.detail;
 
-    xhr.open('GET', '/data/phones.json', true);
+    this._loadPhones(query)
+  }
+
+  _loadPhones(query) {
+    let xhr = new XMLHttpRequest();
+    let url = '/data/phones.json';
+
+    if (query) {
+      url += '?query=' + query;
+    }
+
+    xhr.open('GET', url, true);
 
     xhr.send();
 
@@ -54,6 +66,15 @@ class Page {
         alert( xhr.status + ': ' + xhr.statusText ); // пример вывода: 404: Not Found
       } else {
         let phones = JSON.parse(xhr.responseText);
+
+        // ToDo: move this code to the server
+        if (query) {
+          let pattern = query.toLowerCase();
+
+          phones = phones.filter(function(phone) {
+            return !query || phone.name.toLowerCase().indexOf(pattern) !== -1;
+          });
+        }
 
         this._catalogue.render(phones);
       }
