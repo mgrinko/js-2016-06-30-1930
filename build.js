@@ -101,12 +101,10 @@
 	    key: '_onPhoneSelected',
 	    value: function _onPhoneSelected(event) {
 	      var phoneId = event.detail;
-	      var phoneDetails = this._getPhoneById(phoneId);
+	
+	      this._loadPhoneById(phoneId);
 	
 	      this._catalogue.hide();
-	
-	      this._viewer.render(phoneDetails);
-	      this._viewer.show();
 	    }
 	  }, {
 	    key: '_onFilterChanged',
@@ -125,13 +123,13 @@
 	        url += '?query=' + query;
 	      }
 	
-	      xhr.open('GET', url, true);
-	
-	      xhr.send();
+	      xhr.onerror = function () {
+	        console.error(xhr.status + ': ' + xhr.statusText);
+	      };
 	
 	      xhr.onload = function () {
 	        if (xhr.status != 200) {
-	          alert(xhr.status + ': ' + xhr.statusText); // пример вывода: 404: Not Found
+	          console.error(xhr.status + ': ' + xhr.statusText);
 	        } else {
 	          var phones = JSON.parse(xhr.responseText);
 	
@@ -141,7 +139,7 @@
 	              var pattern = query.toLowerCase();
 	
 	              phones = phones.filter(function (phone) {
-	                return !query || phone.name.toLowerCase().indexOf(pattern) !== -1;
+	                return phone.name.toLowerCase().indexOf(pattern) !== -1;
 	              });
 	            })();
 	          }
@@ -149,13 +147,49 @@
 	          this._catalogue.render(phones);
 	        }
 	      }.bind(this);
+	
+	      xhr.open('GET', url, true);
+	
+	      xhr.send();
 	    }
 	  }, {
-	    key: '_getPhoneById',
-	    value: function _getPhoneById(phoneId) {
-	      return defaultPhones.filter(function (phone) {
-	        return phone.id === phoneId;
-	      })[0];
+	    key: '_loadPhoneById',
+	    value: function _loadPhoneById(phoneId) {
+	      this.ajax('/data/' + phoneId + '.json', {
+	        method: 'GET',
+	
+	        success: function (phone) {
+	          this._viewer.render(phone);
+	          this._viewer.show();
+	        }.bind(this),
+	
+	        error: function (error) {
+	          console.error(error);
+	        }.bind(this)
+	      });
+	    }
+	  }, {
+	    key: 'ajax',
+	    value: function ajax(url, options) {
+	      var xhr = new XMLHttpRequest();
+	
+	      xhr.open(options.method || 'GET', url, true);
+	
+	      xhr.onload = function () {
+	        if (xhr.status != 200) {
+	          options.error(xhr.status + ': ' + xhr.statusText);
+	        } else {
+	          var response = JSON.parse(xhr.responseText);
+	
+	          options.success(response);
+	        }
+	      };
+	
+	      xhr.onerror = function () {
+	        options.error(xhr.status + ': ' + xhr.statusText);
+	      };
+	
+	      xhr.send();
 	    }
 	  }]);
 	
@@ -259,6 +293,8 @@
 	    _classCallCheck(this, PhoneViewer);
 	
 	    this._el = options.element;
+	
+	    this._el.addEventListener('click', this._onBackButtonClick.bind(this));
 	  }
 	
 	  _createClass(PhoneViewer, [{
@@ -278,21 +314,20 @@
 	        phone: phone
 	      });
 	    }
+	  }, {
+	    key: '_onBackButtonClick',
+	    value: function _onBackButtonClick(event) {
+	      if (!event.target.closest('[data-element="backButton"]')) {
+	        return;
+	      }
 	
-	    // this._el.addEventListener('click', this._onBackButtonClick.bind(this));
-	    //
-	    // _onBackButtonClick(event) {
-	    //   if (!event.target.closest('[data-element="backButton"]')) {
-	    //     return;
-	    //   }
-	    //
-	    //   this._triggerBackEvent();
-	    // }
-	    //
-	    // _triggerBackEvent() {
-	    //   this._el.dispatchEvent(new CustomEvent('back'));
-	    // }
-	
+	      this._triggerBackEvent();
+	    }
+	  }, {
+	    key: '_triggerBackEvent',
+	    value: function _triggerBackEvent() {
+	      this._el.dispatchEvent(new CustomEvent('back'));
+	    }
 	  }]);
 	
 	  return PhoneViewer;
@@ -306,18 +341,22 @@
 
 	var Handlebars = __webpack_require__(6);
 	function __default(obj) { return obj && (obj.__esModule ? obj["default"] : obj); }
-	module.exports = (Handlebars["default"] || Handlebars).template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-	    var stack1, alias1=container.lambda, alias2=container.escapeExpression;
+	module.exports = (Handlebars["default"] || Handlebars).template({"1":function(container,depth0,helpers,partials,data) {
+	    return "    <li>\n      <img src=\""
+	    + container.escapeExpression(container.lambda(depth0, depth0))
+	    + "\">\n    </li>\n";
+	},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+	    var stack1, alias1=container.lambda;
 	
 	  return "<button data-element=\"backButton\">Back</button>\n\n<img class=\"phone\" src=\""
-	    + alias2(alias1(((stack1 = (depth0 != null ? depth0.phone : depth0)) != null ? stack1.imageUrl : stack1), depth0))
+	    + container.escapeExpression(alias1(((stack1 = ((stack1 = (depth0 != null ? depth0.phone : depth0)) != null ? stack1.images : stack1)) != null ? stack1["0"] : stack1), depth0))
 	    + "\">\n<h1>"
 	    + ((stack1 = alias1(((stack1 = (depth0 != null ? depth0.phone : depth0)) != null ? stack1.name : stack1), depth0)) != null ? stack1 : "")
 	    + "</h1>\n<p>"
-	    + ((stack1 = alias1(((stack1 = (depth0 != null ? depth0.phone : depth0)) != null ? stack1.snippet : stack1), depth0)) != null ? stack1 : "")
-	    + "></p>\n<ul class=\"phone-thumbs\">\n  <li>\n    <img src=\""
-	    + alias2(alias1(((stack1 = (depth0 != null ? depth0.phone : depth0)) != null ? stack1.imageUrl : stack1), depth0))
-	    + "\">\n  </li>\n</ul>";
+	    + ((stack1 = alias1(((stack1 = (depth0 != null ? depth0.phone : depth0)) != null ? stack1.description : stack1), depth0)) != null ? stack1 : "")
+	    + "></p>\n<ul class=\"phone-thumbs\">\n"
+	    + ((stack1 = helpers.each.call(depth0 != null ? depth0 : {},((stack1 = (depth0 != null ? depth0.phone : depth0)) != null ? stack1.images : stack1),{"name":"each","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+	    + "</ul>";
 	},"useData":true});
 
 /***/ },

@@ -35,12 +35,10 @@ class Page {
 
   _onPhoneSelected(event) {
     let phoneId = event.detail;
-    let phoneDetails = this._getPhoneById(phoneId);
+
+    this._loadPhoneById(phoneId);
 
     this._catalogue.hide();
-
-    this._viewer.render(phoneDetails);
-    this._viewer.show();
   }
 
   _onFilterChanged(event) {
@@ -57,13 +55,13 @@ class Page {
       url += '?query=' + query;
     }
 
-    xhr.open('GET', url, true);
-
-    xhr.send();
+    xhr.onerror = function() {
+      console.error( xhr.status + ': ' + xhr.statusText );
+    };
 
     xhr.onload = function() {
       if (xhr.status != 200) {
-        alert( xhr.status + ': ' + xhr.statusText ); // пример вывода: 404: Not Found
+        console.error( xhr.status + ': ' + xhr.statusText );
       } else {
         let phones = JSON.parse(xhr.responseText);
 
@@ -72,19 +70,54 @@ class Page {
           let pattern = query.toLowerCase();
 
           phones = phones.filter(function(phone) {
-            return !query || phone.name.toLowerCase().indexOf(pattern) !== -1;
+            return phone.name.toLowerCase().indexOf(pattern) !== -1;
           });
         }
 
         this._catalogue.render(phones);
       }
     }.bind(this);
+
+    xhr.open('GET', url, true);
+
+    xhr.send();
   }
 
-  _getPhoneById(phoneId) {
-    return defaultPhones.filter(function(phone) {
-      return phone.id === phoneId;
-    })[0];
+  _loadPhoneById(phoneId) {
+    this.ajax(`/data/${phoneId}.json`, {
+      method: 'GET',
+
+      success: function(phone) {
+        this._viewer.render(phone);
+        this._viewer.show();
+      }.bind(this),
+
+      error: function(error) {
+        console.error(error);
+      }.bind(this)
+    })
+  }
+
+  ajax(url, options) {
+    let xhr = new XMLHttpRequest();
+
+    xhr.open(options.method || 'GET', url, true);
+
+    xhr.onload = function() {
+      if (xhr.status != 200) {
+        options.error( xhr.status + ': ' + xhr.statusText );
+      } else {
+        let response = JSON.parse(xhr.responseText);
+
+        options.success(response);
+      }
+    };
+
+    xhr.onerror = function() {
+      options.error(xhr.status + ': ' + xhr.statusText);
+    };
+
+    xhr.send();
   }
 }
 

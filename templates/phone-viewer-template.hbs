@@ -1,10 +1,12 @@
 <button data-element="backButton">Back</button>
 
-<img class="phone" src="{{phone.imageUrl}}">
+<img class="phone" src="{{phone.images.[0]}}">
 <h1>{{{phone.name}}}</h1>
-<p>{{{phone.snippet}}}></p>
+<p>{{{phone.description}}}></p>
 <ul class="phone-thumbs">
-  <li>
-    <img src="{{phone.imageUrl}}">
-  </li>
+  {{#each phone.images}}
+    <li>
+      <img src="{{this}}">
+    </li>
+  {{/each}}
 </ul>
