@@ -5,15 +5,13 @@ let PhoneViewer = require('./phoneViewer');
 let Filter = require('./filter');
 let Sorter = require('./sorter');
 
-let defaultPhones = require('json!./../phones/phones.json');
-
 class Page {
   constructor(options) {
     this._el = options.element;
 
     this._catalogue = new PhoneCatalogue({
       element: this._el.querySelector('[data-component="phoneCatalogue"]'),
-      phones: defaultPhones
+      phones: this._getPhones()
     });
 
     this._viewer = new PhoneViewer({
@@ -41,6 +39,20 @@ class Page {
 
     this._viewer.render(phoneDetails);
     this._viewer.show();
+  }
+
+  _getPhones() {
+    var xhr = new XMLHttpRequest();
+
+    xhr.open('GET', '/data/phones.json', false);
+
+    xhr.send();
+
+    if (xhr.status != 200) {
+      alert( xhr.status + ': ' + xhr.statusText ); // пример вывода: 404: Not Found
+    } else {
+      return JSON.parse(xhr.responseText);
+    }
   }
 
   _getPhoneById(phoneId) {
