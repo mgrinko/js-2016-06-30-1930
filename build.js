@@ -62,6 +62,8 @@
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
+	var ajaxService = __webpack_require__(28);
+	
 	var PhoneCatalogue = __webpack_require__(2);
 	var PhoneViewer = __webpack_require__(4);
 	var Filter = __webpack_require__(25);
@@ -116,23 +118,16 @@
 	  }, {
 	    key: '_loadPhones',
 	    value: function _loadPhones(query) {
-	      var xhr = new XMLHttpRequest();
 	      var url = '/data/phones.json';
 	
 	      if (query) {
 	        url += '?query=' + query;
 	      }
 	
-	      xhr.onerror = function () {
-	        console.error(xhr.status + ': ' + xhr.statusText);
-	      };
+	      ajaxService.ajax(url, {
+	        method: 'GET',
 	
-	      xhr.onload = function () {
-	        if (xhr.status != 200) {
-	          console.error(xhr.status + ': ' + xhr.statusText);
-	        } else {
-	          var phones = JSON.parse(xhr.responseText);
-	
+	        success: function (phones) {
 	          // ToDo: move this code to the server
 	          if (query) {
 	            (function () {
@@ -145,17 +140,17 @@
 	          }
 	
 	          this._catalogue.render(phones);
-	        }
-	      }.bind(this);
+	        }.bind(this),
 	
-	      xhr.open('GET', url, true);
-	
-	      xhr.send();
+	        error: function (error) {
+	          console.error(error);
+	        }.bind(this)
+	      });
 	    }
 	  }, {
 	    key: '_loadPhoneById',
 	    value: function _loadPhoneById(phoneId) {
-	      this.ajax('/data/' + phoneId + '.json', {
+	      ajaxService.ajax('/data/' + phoneId + '.json', {
 	        method: 'GET',
 	
 	        success: function (phone) {
@@ -167,29 +162,6 @@
 	          console.error(error);
 	        }.bind(this)
 	      });
-	    }
-	  }, {
-	    key: 'ajax',
-	    value: function ajax(url, options) {
-	      var xhr = new XMLHttpRequest();
-	
-	      xhr.open(options.method || 'GET', url, true);
-	
-	      xhr.onload = function () {
-	        if (xhr.status != 200) {
-	          options.error(xhr.status + ': ' + xhr.statusText);
-	        } else {
-	          var response = JSON.parse(xhr.responseText);
-	
-	          options.success(response);
-	        }
-	      };
-	
-	      xhr.onerror = function () {
-	        options.error(xhr.status + ': ' + xhr.statusText);
-	      };
-	
-	      xhr.send();
 	    }
 	  }]);
 	
@@ -1591,6 +1563,37 @@
 	};
 	
 	module.exports = Sorter;
+
+/***/ },
+/* 27 */,
+/* 28 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	module.exports = {
+	  ajax: function ajax(url, options) {
+	    var xhr = new XMLHttpRequest();
+	
+	    xhr.open(options.method || 'GET', url, true);
+	
+	    xhr.onload = function () {
+	      if (xhr.status != 200) {
+	        options.error(xhr.status + ': ' + xhr.statusText);
+	      } else {
+	        var response = JSON.parse(xhr.responseText);
+	
+	        options.success(response);
+	      }
+	    };
+	
+	    xhr.onerror = function () {
+	      options.error(xhr.status + ': ' + xhr.statusText);
+	    };
+	
+	    xhr.send();
+	  }
+	};
 
 /***/ }
 /******/ ]);
