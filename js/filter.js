@@ -1,28 +1,19 @@
 'use strict';
 
-class Filter {
+const BaseComponent = require('./baseComponent');
+
+class Filter extends BaseComponent {
   constructor(options) {
-    this._el = options.element;
+    super(options.element);
 
     this._field = this._el.querySelector('[data-element="field"]');
 
-    this._field.addEventListener('input', this._onFieldChange.bind(this))
-  }
-
-
-  getElement() {
-    return this._el;
+    this.on('input', this._onFieldChange.bind(this), '[data-element="field"]')
   }
 
   _onFieldChange() {
-    let customEvent = new CustomEvent('filterChanged', {
-      detail: this._field.value
-    });
-
-    this._el.dispatchEvent(customEvent);
+    this.trigger('filterChanged', this._field.value);
   }
-
-
 }
 
 module.exports = Filter;

@@ -95,8 +95,8 @@
 	      element: this._el.querySelector('[data-component="sorter"]')
 	    });
 	
-	    this._catalogue.getElement().addEventListener('phoneSelected', this._onPhoneSelected.bind(this));
-	    this._filter.getElement().addEventListener('filterChanged', this._onFilterChanged.bind(this));
+	    this._catalogue.on('phoneSelected', this._onPhoneSelected.bind(this));
+	    this._filter.on('filterChanged', this._onFilterChanged.bind(this));
 	  }
 	
 	  _createClass(Page, [{
@@ -180,35 +180,29 @@
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var BaseComponent = __webpack_require__(29);
+	
 	var template = __webpack_require__(3);
 	
-	var PhoneCatalogue = function () {
+	var PhoneCatalogue = function (_BaseComponent) {
+	  _inherits(PhoneCatalogue, _BaseComponent);
+	
 	  function PhoneCatalogue(options) {
 	    _classCallCheck(this, PhoneCatalogue);
 	
-	    this._el = options.element;
+	    var _this = _possibleConstructorReturn(this, (PhoneCatalogue.__proto__ || Object.getPrototypeOf(PhoneCatalogue)).call(this, options.element));
 	
-	    this._compiledTemplate = _.template(template);
+	    _this._compiledTemplate = _.template(template);
 	
-	    this._el.addEventListener('click', this._onPhoneLinkClick.bind(this));
+	    _this.on('click', _this._onPhoneLinkClick.bind(_this), '[data-element="phoneLink"]');
+	    return _this;
 	  }
 	
 	  _createClass(PhoneCatalogue, [{
-	    key: 'getElement',
-	    value: function getElement() {
-	      return this._el;
-	    }
-	  }, {
-	    key: 'show',
-	    value: function show() {
-	      this._el.classList.remove('js-hidden');
-	    }
-	  }, {
-	    key: 'hide',
-	    value: function hide() {
-	      this._el.classList.add('js-hidden');
-	    }
-	  }, {
 	    key: 'render',
 	    value: function render(phones) {
 	      this._el.innerHTML = this._compiledTemplate({
@@ -218,27 +212,14 @@
 	  }, {
 	    key: '_onPhoneLinkClick',
 	    value: function _onPhoneLinkClick(event) {
-	      if (!event.target.closest('[data-element="phoneLink"]')) {
-	        return;
-	      }
-	
 	      var phoneContainer = event.target.closest('[data-element="phone"]');
 	
-	      this._triggerPhoneSelectedEvent(phoneContainer.dataset.phoneId);
-	    }
-	  }, {
-	    key: '_triggerPhoneSelectedEvent',
-	    value: function _triggerPhoneSelectedEvent(phoneId) {
-	      var customEvent = new CustomEvent('phoneSelected', {
-	        detail: phoneId
-	      });
-	
-	      this._el.dispatchEvent(customEvent);
+	      this.trigger('phoneSelected', phoneContainer.dataset.phoneId);
 	    }
 	  }]);
 	
 	  return PhoneCatalogue;
-	}();
+	}(BaseComponent);
 	
 	module.exports = PhoneCatalogue;
 
@@ -258,28 +239,27 @@
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var BaseComponent = __webpack_require__(29);
+	
 	var compiledTemplate = __webpack_require__(5);
 	
-	var PhoneViewer = function () {
+	var PhoneViewer = function (_BaseComponent) {
+	  _inherits(PhoneViewer, _BaseComponent);
+	
 	  function PhoneViewer(options) {
 	    _classCallCheck(this, PhoneViewer);
 	
-	    this._el = options.element;
+	    var _this = _possibleConstructorReturn(this, (PhoneViewer.__proto__ || Object.getPrototypeOf(PhoneViewer)).call(this, options.element));
 	
-	    this._el.addEventListener('click', this._onBackButtonClick.bind(this));
+	    _this.on('click', _this._onBackButtonClick.bind(_this), '[data-element="backButton"]');
+	    return _this;
 	  }
 	
 	  _createClass(PhoneViewer, [{
-	    key: 'show',
-	    value: function show() {
-	      this._el.classList.remove('js-hidden');
-	    }
-	  }, {
-	    key: 'hide',
-	    value: function hide() {
-	      this._el.classList.add('js-hidden');
-	    }
-	  }, {
 	    key: 'render',
 	    value: function render(phone) {
 	      this._el.innerHTML = compiledTemplate({
@@ -289,21 +269,17 @@
 	  }, {
 	    key: '_onBackButtonClick',
 	    value: function _onBackButtonClick(event) {
-	      if (!event.target.closest('[data-element="backButton"]')) {
-	        return;
-	      }
-	
 	      this._triggerBackEvent();
 	    }
 	  }, {
 	    key: '_triggerBackEvent',
 	    value: function _triggerBackEvent() {
-	      this._el.dispatchEvent(new CustomEvent('back'));
+	      this.trigger('back');
 	    }
 	  }]);
 	
 	  return PhoneViewer;
-	}();
+	}(BaseComponent);
 	
 	module.exports = PhoneViewer;
 
@@ -1508,7 +1484,7 @@
 
 /***/ },
 /* 25 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
@@ -1516,35 +1492,35 @@
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var Filter = function () {
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var BaseComponent = __webpack_require__(29);
+	
+	var Filter = function (_BaseComponent) {
+	  _inherits(Filter, _BaseComponent);
+	
 	  function Filter(options) {
 	    _classCallCheck(this, Filter);
 	
-	    this._el = options.element;
+	    var _this = _possibleConstructorReturn(this, (Filter.__proto__ || Object.getPrototypeOf(Filter)).call(this, options.element));
 	
-	    this._field = this._el.querySelector('[data-element="field"]');
+	    _this._field = _this._el.querySelector('[data-element="field"]');
 	
-	    this._field.addEventListener('input', this._onFieldChange.bind(this));
+	    _this.on('input', _this._onFieldChange.bind(_this), '[data-element="field"]');
+	    return _this;
 	  }
 	
 	  _createClass(Filter, [{
-	    key: 'getElement',
-	    value: function getElement() {
-	      return this._el;
-	    }
-	  }, {
 	    key: '_onFieldChange',
 	    value: function _onFieldChange() {
-	      var customEvent = new CustomEvent('filterChanged', {
-	        detail: this._field.value
-	      });
-	
-	      this._el.dispatchEvent(customEvent);
+	      this.trigger('filterChanged', this._field.value);
 	    }
 	  }]);
 	
 	  return Filter;
-	}();
+	}(BaseComponent);
 	
 	module.exports = Filter;
 
@@ -1594,6 +1570,64 @@
 	    xhr.send();
 	  }
 	};
+
+/***/ },
+/* 29 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var BaseComponent = function () {
+	  function BaseComponent(element) {
+	    _classCallCheck(this, BaseComponent);
+	
+	    this._el = element;
+	  }
+	
+	  _createClass(BaseComponent, [{
+	    key: 'show',
+	    value: function show() {
+	      this._el.classList.remove('js-hidden');
+	    }
+	  }, {
+	    key: 'hide',
+	    value: function hide() {
+	      this._el.classList.add('js-hidden');
+	    }
+	  }, {
+	    key: 'on',
+	    value: function on(eventName, handler, selector) {
+	      this._el.addEventListener(eventName, function (event) {
+	        if (selector) {
+	          var closest = event.target.closest(selector);
+	
+	          if (!closest || !this._el.contains(closest)) {
+	            return;
+	          }
+	        }
+	
+	        handler(event);
+	      }.bind(this));
+	    }
+	  }, {
+	    key: 'trigger',
+	    value: function trigger(eventName, data) {
+	      var customEvent = new CustomEvent(eventName, {
+	        detail: data
+	      });
+	
+	      this._el.dispatchEvent(customEvent);
+	    }
+	  }]);
+	
+	  return BaseComponent;
+	}();
+	
+	module.exports = BaseComponent;
 
 /***/ }
 /******/ ]);

@@ -31,8 +31,8 @@ class Page {
       element: this._el.querySelector('[data-component="sorter"]')
     });
 
-    this._catalogue.getElement().addEventListener('phoneSelected', this._onPhoneSelected.bind(this));
-    this._filter.getElement().addEventListener('filterChanged', this._onFilterChanged.bind(this));
+    this._catalogue.on('phoneSelected', this._onPhoneSelected.bind(this));
+    this._filter.on('filterChanged', this._onFilterChanged.bind(this));
   }
 
   _onPhoneSelected(event) {

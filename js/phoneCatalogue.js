@@ -1,27 +1,18 @@
 'use strict';
 
+const BaseComponent = require('./baseComponent');
+
 let template = require('raw!./../templates/phone-catalogue-template.html');
 
-class PhoneCatalogue {
+class PhoneCatalogue extends BaseComponent {
   constructor(options) {
-    this._el = options.element;
+    super(options.element);
 
     this._compiledTemplate = _.template(template);
 
-    this._el.addEventListener('click', this._onPhoneLinkClick.bind(this));
+    this.on('click', this._onPhoneLinkClick.bind(this), '[data-element="phoneLink"]');
   }
 
-  getElement() {
-    return this._el;
-  }
-
-  show() {
-    this._el.classList.remove('js-hidden')
-  }
-
-  hide() {
-    this._el.classList.add('js-hidden')
-  }
 
   render(phones) {
     this._el.innerHTML = this._compiledTemplate({
@@ -30,21 +21,9 @@ class PhoneCatalogue {
   }
 
   _onPhoneLinkClick(event) {
-    if (!event.target.closest('[data-element="phoneLink"]')) {
-      return;
-    }
-
     let phoneContainer = event.target.closest('[data-element="phone"]');
 
-    this._triggerPhoneSelectedEvent(phoneContainer.dataset.phoneId);
-  }
-
-  _triggerPhoneSelectedEvent(phoneId) {
-    let customEvent = new CustomEvent('phoneSelected', {
-      detail: phoneId
-    });
-
-    this._el.dispatchEvent(customEvent);
+    this.trigger('phoneSelected', phoneContainer.dataset.phoneId);
   }
 }
 

@@ -1,20 +1,14 @@
 'use strict';
 
+const BaseComponent = require('./baseComponent');
+
 let compiledTemplate = require('./../templates/phone-viewer-template.hbs');
 
-class PhoneViewer {
+class PhoneViewer extends BaseComponent {
   constructor(options) {
-    this._el = options.element;
+    super(options.element);
 
-    this._el.addEventListener('click', this._onBackButtonClick.bind(this));
-  }
-
-  show() {
-    this._el.classList.remove('js-hidden');
-  }
-
-  hide() {
-    this._el.classList.add('js-hidden');
+    this.on('click', this._onBackButtonClick.bind(this), '[data-element="backButton"]');
   }
 
   render(phone) {
@@ -24,15 +18,11 @@ class PhoneViewer {
   }
 
   _onBackButtonClick(event) {
-    if (!event.target.closest('[data-element="backButton"]')) {
-      return;
-    }
-
     this._triggerBackEvent();
   }
 
   _triggerBackEvent() {
-    this._el.dispatchEvent(new CustomEvent('back'));
+    this.trigger('back');
   }
 }
 
