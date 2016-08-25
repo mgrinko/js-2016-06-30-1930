@@ -74,9 +74,10 @@
 	    this._el = options.element;
 	
 	    this._catalogue = new PhoneCatalogue({
-	      element: this._el.querySelector('[data-component="phoneCatalogue"]'),
-	      phones: this._getPhones()
+	      element: this._el.querySelector('[data-component="phoneCatalogue"]')
 	    });
+	
+	    this._loadPhones();
 	
 	    this._viewer = new PhoneViewer({
 	      element: this._el.querySelector('[data-component="phoneViewer"]')
@@ -107,19 +108,23 @@
 	      this._viewer.show();
 	    }
 	  }, {
-	    key: '_getPhones',
-	    value: function _getPhones() {
+	    key: '_loadPhones',
+	    value: function _loadPhones() {
 	      var xhr = new XMLHttpRequest();
 	
-	      xhr.open('GET', '/data/phones.json', false);
+	      xhr.open('GET', '/data/phones.json', true);
 	
 	      xhr.send();
 	
-	      if (xhr.status != 200) {
-	        alert(xhr.status + ': ' + xhr.statusText); // пример вывода: 404: Not Found
-	      } else {
-	        return JSON.parse(xhr.responseText);
-	      }
+	      xhr.onload = function () {
+	        if (xhr.status != 200) {
+	          alert(xhr.status + ': ' + xhr.statusText); // пример вывода: 404: Not Found
+	        } else {
+	          var phones = JSON.parse(xhr.responseText);
+	
+	          this._catalogue.render(phones);
+	        }
+	      }.bind(this);
 	    }
 	  }, {
 	    key: '_getPhoneById',
@@ -155,8 +160,6 @@
 	
 	    this._compiledTemplate = _.template(template);
 	
-	    this._render(options.phones);
-	
 	    this._el.addEventListener('click', this._onPhoneLinkClick.bind(this));
 	  }
 	
@@ -176,6 +179,13 @@
 	      this._el.classList.add('js-hidden');
 	    }
 	  }, {
+	    key: 'render',
+	    value: function render(phones) {
+	      this._el.innerHTML = this._compiledTemplate({
+	        phones: phones
+	      });
+	    }
+	  }, {
 	    key: '_onPhoneLinkClick',
 	    value: function _onPhoneLinkClick(event) {
 	      if (!event.target.closest('[data-element="phoneLink"]')) {
@@ -185,13 +195,6 @@
 	      var phoneContainer = event.target.closest('[data-element="phone"]');
 	
 	      this._triggerPhoneSelectedEvent(phoneContainer.dataset.phoneId);
-	    }
-	  }, {
-	    key: '_render',
-	    value: function _render(phones) {
-	      this._el.innerHTML = this._compiledTemplate({
-	        phones: phones
-	      });
 	    }
 	  }, {
 	    key: '_triggerPhoneSelectedEvent',

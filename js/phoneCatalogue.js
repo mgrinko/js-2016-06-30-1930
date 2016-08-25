@@ -8,8 +8,6 @@ class PhoneCatalogue {
 
     this._compiledTemplate = _.template(template);
 
-    this._render(options.phones);
-
     this._el.addEventListener('click', this._onPhoneLinkClick.bind(this));
   }
 
@@ -25,6 +23,12 @@ class PhoneCatalogue {
     this._el.classList.add('js-hidden')
   }
 
+  render(phones) {
+    this._el.innerHTML = this._compiledTemplate({
+      phones: phones
+    });
+  }
+
   _onPhoneLinkClick(event) {
     if (!event.target.closest('[data-element="phoneLink"]')) {
       return;
@@ -33,12 +37,6 @@ class PhoneCatalogue {
     let phoneContainer = event.target.closest('[data-element="phone"]');
 
     this._triggerPhoneSelectedEvent(phoneContainer.dataset.phoneId);
-  }
-
-  _render(phones) {
-    this._el.innerHTML = this._compiledTemplate({
-      phones: phones
-    });
   }
 
   _triggerPhoneSelectedEvent(phoneId) {
