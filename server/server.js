@@ -7,11 +7,13 @@ var file = new static.Server('.', {
 function accept(req, res) {
   if (req.url.indexOf('/data/') !== 0) {
     req.url = '/public' + req.url;
-  }
 
-  setTimeout(function() {
     file.serve(req, res);
-  }, 10);
+  } else {
+    setTimeout(function() {
+      file.serve(req, res);
+    }, 3000);
+  }
 }
 
 http.createServer(accept).listen(8080);
