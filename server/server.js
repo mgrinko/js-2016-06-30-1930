@@ -5,6 +5,10 @@ var file = new static.Server('.', {
 });
 
 function accept(req, res) {
+  if (req.url.indexOf('/data/') !== 0) {
+    req.url = '/public' + req.url;
+  }
+
   setTimeout(function() {
     file.serve(req, res);
   }, 10);

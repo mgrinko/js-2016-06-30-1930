@@ -1,10 +1,11 @@
 let webpack = require('webpack');
+let path = require('path');
 
 module.exports = {
-  context: __dirname + '/js',
+  context: path.join(__dirname, 'frontend', 'js'),
   entry: './app.js',
   output: {
-    path: __dirname,
+    path: path.join(__dirname, 'public'),
     filename: 'build.js'
   },
 

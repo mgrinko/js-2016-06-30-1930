@@ -2,20 +2,18 @@
 
 const BaseComponent = require('./baseComponent');
 
-let template = require('raw!./../templates/phone-catalogue-template.html');
+let compiledTemplate = require('./../templates/phone-catalogue-template.hbs');
 
 class PhoneCatalogue extends BaseComponent {
   constructor(options) {
     super(options.element);
-
-    this._compiledTemplate = _.template(template);
 
     this.on('click', this._onPhoneLinkClick.bind(this), '[data-element="phoneLink"]');
   }
 
 
   render(phones) {
-    this._el.innerHTML = this._compiledTemplate({
+    this._el.innerHTML = compiledTemplate({
       phones: phones
     });
   }
