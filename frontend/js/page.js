@@ -56,11 +56,22 @@ class Page {
     let loadPromise = this._loadPhoneById(phoneId);
     let confirmationPromise = this._createConfirmationPromise();
 
+    // show loader
+
     confirmationPromise
       .then(function() {
         return loadPromise;
       })
       .then(this._showPhone.bind(this))
+      .catch(this._handleError.bind(this))
+      // .filnally(function() {
+      //   // hide loader
+      // });
+
+    Promise.all([loadPromise, confirmationPromise])
+      .then(function(results) {
+        this._showPhone(results[0])
+      })
       .catch(this._handleError.bind(this));
   }
 
