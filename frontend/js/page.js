@@ -53,29 +53,27 @@ class Page {
 
     this._confirmation.show();
 
-    this._confirmation.on('submit', function() {
-      this._isConfirmend = true;
-
-      this._confirmation.hide();
-
-      if (this._loadedPhone) {
-        this._showPhone(this._loadedPhone);
-
-        this._loadedPhone = null;
-        this._isConfirmend = null;
-      }
-    }.bind(this));
-
     let loadPromise = this._loadPhoneById(phoneId);
+    let confirmationPromise = this._createConfirmationPromise();
 
-    loadPromise
-      .then(this._onPhoneLoaded.bind(this))
-      .catch(this._handleError.bind(this));
-
-    loadPromise
+    confirmationPromise
       .then(function() {
-        console.log();
-      });
+        return loadPromise;
+      })
+      .then(this._showPhone.bind(this))
+      .catch(this._handleError.bind(this));
+  }
+
+  _createConfirmationPromise() {
+    return new Promise(function(resolve, reject) {
+      this._confirmation.on('submit', function() {
+        resolve();
+      }.bind(this));
+
+      this._confirmation.on('reset', function() {
+        reject();
+      }.bind(this));
+    }.bind(this));
   }
 
   _onFilterChanged(event) {
@@ -119,17 +117,6 @@ class Page {
     return ajaxService.ajax(`/data/${phoneId}.json`, {
       method: 'GET'
     });
-  }
-
-  _onPhoneLoaded(phone) {
-    this._loadedPhone = phone;
-
-    if (this._isConfirmend) {
-      this._showPhone(phone);
-
-      this._loadedPhone = null;
-      this._isConfirmend = null;
-    }
   }
 
   _showPhone(phone) {
