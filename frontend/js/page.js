@@ -54,10 +54,28 @@ class Page {
     this._confirmation.show();
 
     this._confirmation.on('submit', function() {
-      this._loadPhoneById(phoneId);
+      this._isConfirmend = true;
 
       this._confirmation.hide();
+
+      if (this._loadedPhone) {
+        this._showPhone(this._loadedPhone);
+
+        this._loadedPhone = null;
+        this._isConfirmend = null;
+      }
     }.bind(this));
+
+    let loadPromise = this._loadPhoneById(phoneId);
+
+    loadPromise
+      .then(this._onPhoneLoaded.bind(this))
+      .catch(this._handleError.bind(this));
+
+    loadPromise
+      .then(function() {
+        console.log();
+      });
   }
 
   _onFilterChanged(event) {
@@ -73,10 +91,10 @@ class Page {
       url += '?query=' + query;
     }
 
-    ajaxService.ajax(url, {
-      method: 'GET',
-
-      success: function(phones) {
+    return ajaxService.ajax(url, {
+      method: 'GET'
+    })
+      .then(function(phones) {
         // ToDo: move this code to the server
         if (query) {
           let pattern = query.toLowerCase();
@@ -90,32 +108,40 @@ class Page {
         this._catalogue.show();
 
         this._viewer.hide();
-      }.bind(this),
+      }.bind(this))
 
-      error: function(error) {
+      .catch(function(error) {
         console.error(error);
-      }.bind(this)
-    });
+      }.bind(this))
   }
 
   _loadPhoneById(phoneId) {
-    ajaxService.ajax(`/data/${phoneId}.json`, {
-      method: 'GET',
-
-      success: function(phone) {
-        this._viewer.render(phone);
-        this._viewer.show();
-
-        this._catalogue.hide();
-      }.bind(this),
-
-      error: function(error) {
-        console.error(error);
-      }.bind(this)
+    return ajaxService.ajax(`/data/${phoneId}.json`, {
+      method: 'GET'
     });
   }
 
+  _onPhoneLoaded(phone) {
+    this._loadedPhone = phone;
 
+    if (this._isConfirmend) {
+      this._showPhone(phone);
+
+      this._loadedPhone = null;
+      this._isConfirmend = null;
+    }
+  }
+
+  _showPhone(phone) {
+    this._viewer.render(phone);
+    this._viewer.show();
+
+    this._catalogue.hide();
+  }
+
+  _handleError(error) {
+    console.error(error);
+  }
 }
 
 module.exports = Page;

@@ -2,24 +2,30 @@
 
 module.exports = {
   ajax(url, options) {
-    let xhr = new XMLHttpRequest();
+    return new Promise(function(resolve, reject) {
+      let xhr = new XMLHttpRequest();
 
-    xhr.open(options.method || 'GET', url, true);
+      options = options || {};
 
-    xhr.onload = function() {
-      if (xhr.status != 200) {
-        options.error( xhr.status + ': ' + xhr.statusText );
-      } else {
-        let response = JSON.parse(xhr.responseText);
+      let method = options.method || 'GET';
 
-        options.success(response);
-      }
-    };
+      xhr.open(method, url, true);
 
-    xhr.onerror = function() {
-      options.error(xhr.status + ': ' + xhr.statusText);
-    };
+      xhr.onload = function() {
+        if (xhr.status != 200) {
+          reject( xhr.status + ': ' + xhr.statusText );
+        } else {
+          let response = JSON.parse(xhr.responseText);
 
-    xhr.send();
+          resolve(response);
+        }
+      };
+
+      xhr.onerror = function() {
+        reject(xhr.status + ': ' + xhr.statusText);
+      };
+
+      xhr.send();
+    });
   }
 };
