@@ -18,10 +18,6 @@ class PhoneViewer extends BaseComponent {
   }
 
   _onBackButtonClick(event) {
-    this._triggerBackEvent();
-  }
-
-  _triggerBackEvent() {
     this.trigger('back');
   }
 }

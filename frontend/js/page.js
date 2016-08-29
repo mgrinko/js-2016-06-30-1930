@@ -11,17 +11,14 @@ class Page {
   constructor(options) {
     this._el = options.element;
 
+
     this._catalogue = new PhoneCatalogue({
       element: this._el.querySelector('[data-component="phoneCatalogue"]')
     });
 
-    this._loadPhones();
-
     this._viewer = new PhoneViewer({
       element: this._el.querySelector('[data-component="phoneViewer"]')
     });
-
-    this._viewer.hide();
 
     this._filter = new Filter({
       element: this._el.querySelector('[data-component="filter"]')
@@ -31,16 +28,25 @@ class Page {
       element: this._el.querySelector('[data-component="sorter"]')
     });
 
+
     this._catalogue.on('phoneSelected', this._onPhoneSelected.bind(this));
     this._filter.on('filterChanged', this._onFilterChanged.bind(this));
+    this._viewer.on('back', this._onBackFromViewer.bind(this));
+
+
+    this._loadPhones();
+  }
+
+  _onBackFromViewer() {
+    let query = this._filter.getValue();
+
+    this._loadPhones(query);
   }
 
   _onPhoneSelected(event) {
     let phoneId = event.detail;
 
     this._loadPhoneById(phoneId);
-
-    this._catalogue.hide();
   }
 
   _onFilterChanged(event) {
@@ -70,6 +76,9 @@ class Page {
         }
 
         this._catalogue.render(phones);
+        this._catalogue.show();
+
+        this._viewer.hide();
       }.bind(this),
 
       error: function(error) {
@@ -85,6 +94,8 @@ class Page {
       success: function(phone) {
         this._viewer.render(phone);
         this._viewer.show();
+
+        this._catalogue.hide();
       }.bind(this),
 
       error: function(error) {

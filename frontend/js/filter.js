@@ -11,8 +11,12 @@ class Filter extends BaseComponent {
     this.on('input', this._onFieldChange.bind(this), '[data-element="field"]')
   }
 
+  getValue() {
+    return this._field.value;
+  }
+
   _onFieldChange() {
-    this.trigger('filterChanged', this._field.value);
+    this.trigger('filterChanged', this.getValue());
   }
 }
 
